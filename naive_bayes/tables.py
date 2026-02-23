@@ -85,6 +85,8 @@ class FrequencyTable:
         log.info("Building likelihood table (alpha=%.1f)", self.alpha)
         print("\n" + "-" * 65)
         print(f"  LIKELIHOOD TABLE  (Laplacian smoothing, alpha={self.alpha})")
+        print(f"  Formula : P(value|class) = (count + {self.alpha}) / (class_total + {self.alpha} * k)")
+        print(f"  *** marks zero raw counts fixed by Laplacian correction")
         print("-" * 65)
 
         for feat in self.features:
@@ -93,11 +95,14 @@ class FrequencyTable:
             rows       = []
 
             for val in freq.index:
-                row = {"Feature": feat, "Value": val}
+                row = {"Value": val}
                 for cls in self.classes:
                     raw  = freq.loc[val, cls]
                     prob = self._smooth(raw, self.class_counts[cls], num_values)
-                    row[f"P({val}|{cls})"] = f"{prob:.4f}  (raw={int(raw)})"
+                    # Flag zero-count cells to make Laplacian correction visible
+                    flag = "***" if int(raw) == 0 else ""
+                    row[f"raw|{cls}"]  = f"{int(raw)} {flag}".strip()
+                    row[f"P(·|{cls})"] = f"{prob:.4f}"
                     log.debug(
                         "P(%s|%s) = (%.0f + %.1f) / (%d + %.1f*%d) = %.4f",
                         val, cls, raw, self.alpha,
