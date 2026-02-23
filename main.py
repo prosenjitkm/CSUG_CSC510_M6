@@ -1,6 +1,6 @@
 """
-main.py
--------
+main.py  –  CSUG CSC510 Module 6
+---------------------------------
 Entry point for the Naive Bayes Classifier.
 
 To test with your own input, edit `custom_test` below and run:
